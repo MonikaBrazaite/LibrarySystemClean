@@ -48,4 +48,20 @@ public class LibraryFacade
     _service.DisplayComplexFilteredLoans();
 }
 
+public void SearchBook(string keyword)
+{
+    _service.SearchBookByTitle(keyword);
+}
+
+public void FilterExampleMembers()
+{
+    _service.FilterMembersByEmail();
+}
+
+public void SortBooks()
+{
+    _service.SortBooksByYear();
+}
+
+
 }

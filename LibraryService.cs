@@ -223,6 +223,43 @@ public void DisplayComplexFilteredLoans()
     }
 }
 
+public void SearchBookByTitle(string keyword)
+{
+    var book = _bookRepo.GetAllBooks()
+        .FirstOrDefault(b => b.Title.ToLower().Contains(keyword.ToLower()));
+
+    Console.WriteLine($"\n--- Search Result for '{keyword}' ---");
+    if (book != null)
+        Console.WriteLine($"Found: {book.Title} by {book.Author}");
+    else
+        Console.WriteLine("No book found.");
+}
+
+public void FilterMembersByEmail()
+{
+    var filtered = _db.Members
+        .Where(m => m.Contact.Email.EndsWith("@example.com"))
+        .ToList();
+
+    Console.WriteLine("\n--- Members with '@example.com' emails ---");
+    foreach (var member in filtered)
+    {
+        Console.WriteLine($"{member.Name} - {member.Contact.Email}");
+    }
+}
+
+public void SortBooksByYear()
+{
+    var sortedBooks = _bookRepo.GetAllBooks()
+        .OrderByDescending(b => b.YearPublished)
+        .ToList();
+
+    Console.WriteLine("\n--- Books sorted by year (descending) ---");
+    foreach (var book in sortedBooks)
+    {
+        Console.WriteLine($"{book.Title} - {book.YearPublished}");
+    }
+}
 
 
 }

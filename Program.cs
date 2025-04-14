@@ -18,6 +18,10 @@ class Program
             facade.ShowFilteredLoans();
             facade.ShowBooksByCategory();
             facade.ShowUniqueCategories();
+            facade.SearchBook("title 1");
+            facade.FilterExampleMembers();
+            facade.SortBooks();
+
 
             // ✅ Complex DB query (multiple filters, relationships, and parameters)
             facade.ShowComplexFilteredLoans();
