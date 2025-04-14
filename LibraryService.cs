@@ -62,14 +62,16 @@ public class LibraryService
         if (!_db.Books.Any())
         {
             var categories = _db.Categories.Take(20).ToList();
-            var books = Enumerable.Range(1, 20).Select(i => new Book
-            {
-                Title = $"Book Title {i}",
-                Author = $"Author {i}",
-                ISBN = $"978-000000000{i:D2}",
-                YearPublished = 2000 + i,
-                CategoryId = categories[i % categories.Count].CategoryId
-            }).ToList();
+         var books = Enumerable.Range(1, 20).Select(i =>
+    BookFactory.Create(
+        $"Book Title {i}",
+        $"Author {i}",
+        $"978-000000000{i:D2}",
+        2000 + i,
+        categories[i % categories.Count].CategoryId
+    )
+).ToList();
+
 
             _db.Books.AddRange(books);
             _db.SaveChanges();
