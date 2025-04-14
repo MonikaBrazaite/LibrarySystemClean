@@ -8,10 +8,25 @@ public class LibraryService
     private readonly LibraryContext _db;
     private readonly IBookRepository _bookRepo;
 
+    private List<ILoanObserver> _observers = new List<ILoanObserver>();
+
     public LibraryService(LibraryContext db, IBookRepository bookRepo)
     {
         _db = db;
         _bookRepo = bookRepo;
+    }
+
+    public void RegisterObserver(ILoanObserver observer)
+    {
+        _observers.Add(observer);
+    }
+
+    private void NotifyObservers(Loan loan)
+    {
+        foreach (var observer in _observers)
+        {
+            observer.OnLoanCreated(loan);
+        }
     }
 
     public void SeedDatabase()
@@ -76,19 +91,25 @@ public class LibraryService
                 )
             ).ToList();
 
-            _bookRepo.AddBooks(books);  // ✅ Use Repository
+            _bookRepo.AddBooks(books);
             Logger.Instance.Log("Seeded 20 books.");
         }
 
         if (!_db.Loans.Any())
         {
-            var books = _bookRepo.GetAllBooks().Take(20).ToList();  // ✅ Use Repository
+            var books = _bookRepo.GetAllBooks().Take(20).ToList();
             var members = _db.Members.Take(20).ToList();
-            var loans = Enumerable.Range(0, 20).Select(i => new Loan
+
+            var loans = Enumerable.Range(0, 20).Select(i =>
             {
-                BookId = books[i].BookId,
-                MemberId = members[i].MemberId,
-                LoanDate = DateTime.Now.AddDays(-i)
+                var loan = new Loan
+                {
+                    BookId = books[i].BookId,
+                    MemberId = members[i].MemberId,
+                    LoanDate = DateTime.Now.AddDays(-i)
+                };
+                NotifyObservers(loan); // ✅ Observer pattern in action
+                return loan;
             }).ToList();
 
             _db.Loans.AddRange(loans);
@@ -96,14 +117,13 @@ public class LibraryService
         }
     }
 
-public void DisplayAllLoans()
-{
-    ILoanDisplayer displayer = new BasicLoanDisplayer(_db);
-    displayer = new TimestampedLoanDisplayer(displayer); // Decorate it
+    public void DisplayAllLoans()
+    {
+        ILoanDisplayer displayer = new BasicLoanDisplayer(_db);
+        displayer = new TimestampedLoanDisplayer(displayer); // Decorate it
 
-    displayer.Display();
-}
-
+        displayer.Display();
+    }
 
     public void DisplayFilteredLoans()
     {

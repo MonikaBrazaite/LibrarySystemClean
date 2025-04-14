@@ -14,6 +14,8 @@ class Program
             service.DisplayFilteredLoans();
             service.DisplayBooksByCategory();
             service.DisplayUniqueCategories();
+            service.RegisterObserver(new EmailNotifier());
+
         }
     }
 }
