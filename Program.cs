@@ -6,7 +6,8 @@ class Program
     {
         using (var db = new LibraryContext())
         {
-            var service = new LibraryService(db);
+            var bookRepo = new BookRepository(db);
+            var service = new LibraryService(db, bookRepo);
 
             service.SeedDatabase();
             service.DisplayAllLoans();

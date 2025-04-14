@@ -6,10 +6,12 @@ using Microsoft.EntityFrameworkCore;
 public class LibraryService
 {
     private readonly LibraryContext _db;
+    private readonly IBookRepository _bookRepo;
 
-    public LibraryService(LibraryContext db)
+    public LibraryService(LibraryContext db, IBookRepository bookRepo)
     {
         _db = db;
+        _bookRepo = bookRepo;
     }
 
     public void SeedDatabase()
@@ -59,31 +61,28 @@ public class LibraryService
             _db.Members.AddRange(members);
             _db.SaveChanges();
             Logger.Instance.Log("Seeded 20 members.");
-
         }
 
         if (!_db.Books.Any())
         {
             var categories = _db.Categories.Take(20).ToList();
-         var books = Enumerable.Range(1, 20).Select(i =>
-    BookFactory.Create(
-        $"Book Title {i}",
-        $"Author {i}",
-        $"978-000000000{i:D2}",
-        2000 + i,
-        categories[i % categories.Count].CategoryId
-    )
-).ToList();
+            var books = Enumerable.Range(1, 20).Select(i =>
+                BookFactory.Create(
+                    $"Book Title {i}",
+                    $"Author {i}",
+                    $"978-000000000{i:D2}",
+                    2000 + i,
+                    categories[i % categories.Count].CategoryId
+                )
+            ).ToList();
 
-
-            _db.Books.AddRange(books);
-            _db.SaveChanges();
+            _bookRepo.AddBooks(books);  // ✅ Use Repository
             Logger.Instance.Log("Seeded 20 books.");
         }
 
         if (!_db.Loans.Any())
         {
-            var books = _db.Books.Take(20).ToList();
+            var books = _bookRepo.GetAllBooks().Take(20).ToList();  // ✅ Use Repository
             var members = _db.Members.Take(20).ToList();
             var loans = Enumerable.Range(0, 20).Select(i => new Loan
             {
@@ -94,8 +93,6 @@ public class LibraryService
 
             _db.Loans.AddRange(loans);
             _db.SaveChanges();
-
-
         }
     }
 
@@ -127,9 +124,7 @@ public class LibraryService
 
     public void DisplayBooksByCategory()
     {
-        var booksByCategory = _db.Books
-            .Include(b => b.Category)
-            .ToList()
+        var booksByCategory = _bookRepo.GetAllBooks()
             .GroupBy(b => b.Category.Name)
             .ToDictionary(g => g.Key, g => g.ToList());
 
