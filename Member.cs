@@ -5,4 +5,7 @@ public class Member
 
     // Composite object
     public ContactInfo Contact { get; set; } = new ContactInfo();
+
+    // Extendable: can be used for roles (e.g., Admin, Student, etc.)
+    public string Role { get; set; } = "Member";
 }

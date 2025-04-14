@@ -111,6 +111,25 @@ class Program
                 Console.WriteLine($"{loan.Member.Name} → {loan.Book.Title}");
             }
 
+
+// Create a dictionary: CategoryName -> List of Books
+var booksByCategory = db.Books
+    .Include(b => b.Category)
+    .ToList()
+    .GroupBy(b => b.Category.Name)
+    .ToDictionary(g => g.Key, g => g.ToList());
+
+// Display dictionary results
+Console.WriteLine("\nBooks grouped by category:");
+foreach (var category in booksByCategory)
+{
+    Console.WriteLine($"Category: {category.Key}");
+    foreach (var book in category.Value)
+    {
+        Console.WriteLine($"  - {book.Title}");
+    }
+}
+
             // Display all unique categories
             var categoriesList = db.Categories
                 .Select(c => c.Name)
