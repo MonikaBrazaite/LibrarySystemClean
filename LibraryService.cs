@@ -41,6 +41,7 @@ public class LibraryService
             };
             _db.Categories.AddRange(categories);
             _db.SaveChanges();
+            Logger.Instance.Log("Seeded 20 categories.");
         }
 
         if (!_db.Members.Any())
@@ -57,6 +58,8 @@ public class LibraryService
 
             _db.Members.AddRange(members);
             _db.SaveChanges();
+            Logger.Instance.Log("Seeded 20 members.");
+
         }
 
         if (!_db.Books.Any())
@@ -75,6 +78,7 @@ public class LibraryService
 
             _db.Books.AddRange(books);
             _db.SaveChanges();
+            Logger.Instance.Log("Seeded 20 books.");
         }
 
         if (!_db.Loans.Any())
@@ -90,6 +94,8 @@ public class LibraryService
 
             _db.Loans.AddRange(loans);
             _db.SaveChanges();
+
+
         }
     }
 
