@@ -8,13 +8,27 @@ class Program
         {
             var bookRepo = new BookRepository(db);
             var service = new LibraryService(db, bookRepo);
-            var facade = new LibraryFacade(service); // Use the Facade here
+            var facade = new LibraryFacade(service);
 
-            facade.InitializeSystem();              // Seeds the database and attaches observers
+            // Initialize system: seed data + register observers
+            facade.InitializeSystem();
+
+            // Display all info
             facade.ShowAllLoans();
             facade.ShowFilteredLoans();
             facade.ShowBooksByCategory();
             facade.ShowUniqueCategories();
+
+            // ✅ Test CRUD functionality
+            Console.WriteLine("\n--- Testing UpdateBookTitle ---");
+            facade.ChangeBookTitle(1, "Updated Book Title 1");
+
+            Console.WriteLine("\n--- Testing DeleteLoan ---");
+            facade.RemoveLoan(1);
+
+            // Display updated results
+            Console.WriteLine("\n--- Loans After CRUD Changes ---");
+            facade.ShowAllLoans();
         }
     }
 }

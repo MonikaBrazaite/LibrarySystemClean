@@ -33,4 +33,13 @@ public class LibraryFacade
     {
         _service.DisplayUniqueCategories();
     }
+ public void ChangeBookTitle(int bookId, string newTitle)
+    {
+        _service.UpdateBookTitle(bookId, newTitle);
+    }
+
+    public void RemoveLoan(int loanId)
+    {
+        _service.DeleteLoan(loanId);
+    }
 }

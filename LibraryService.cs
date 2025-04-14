@@ -121,7 +121,6 @@ public class LibraryService
     {
         ILoanDisplayer displayer = new BasicLoanDisplayer(_db);
         displayer = new TimestampedLoanDisplayer(displayer); // Decorator
-
         displayer.Display();
     }
 
@@ -168,6 +167,38 @@ public class LibraryService
         foreach (var name in categoriesList)
         {
             Console.WriteLine($"- {name}");
+        }
+    }
+
+    // ✅ New CRUD Methods
+
+    public void UpdateBookTitle(int bookId, string newTitle)
+    {
+        var book = _db.Books.Find(bookId);
+        if (book != null)
+        {
+            book.Title = newTitle;
+            _db.SaveChanges();
+            Console.WriteLine($"Book ID {bookId} title updated to: {newTitle}");
+        }
+        else
+        {
+            Console.WriteLine($"Book ID {bookId} not found.");
+        }
+    }
+
+    public void DeleteLoan(int loanId)
+    {
+        var loan = _db.Loans.Find(loanId);
+        if (loan != null)
+        {
+            _db.Loans.Remove(loan);
+            _db.SaveChanges();
+            Console.WriteLine($"Loan ID {loanId} deleted.");
+        }
+        else
+        {
+            Console.WriteLine($"Loan ID {loanId} not found.");
         }
     }
 }
