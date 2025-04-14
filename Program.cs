@@ -8,14 +8,13 @@ class Program
         {
             var bookRepo = new BookRepository(db);
             var service = new LibraryService(db, bookRepo);
+            var facade = new LibraryFacade(service); // Use the Facade here
 
-            service.SeedDatabase();
-            service.DisplayAllLoans();
-            service.DisplayFilteredLoans();
-            service.DisplayBooksByCategory();
-            service.DisplayUniqueCategories();
-            service.RegisterObserver(new EmailNotifier());
-
+            facade.InitializeSystem();              // Seeds the database and attaches observers
+            facade.ShowAllLoans();
+            facade.ShowFilteredLoans();
+            facade.ShowBooksByCategory();
+            facade.ShowUniqueCategories();
         }
     }
 }
