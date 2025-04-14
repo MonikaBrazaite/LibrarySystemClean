@@ -201,4 +201,28 @@ public class LibraryService
             Console.WriteLine($"Loan ID {loanId} not found.");
         }
     }
+
+public void DisplayComplexFilteredLoans()
+{
+    var recentDate = DateTime.Now.AddDays(-10);
+
+    var complexLoans = _db.Loans
+        .Include(l => l.Book)
+        .Include(l => l.Member)
+        .Where(l =>
+            l.Book.Title.ToLower().Contains("book") &&
+            l.Member.Name.Contains("5") &&
+            l.LoanDate >= recentDate
+        )
+        .ToList();
+
+    Console.WriteLine("\n--- Complex Filtered Loans (title contains 'book', member contains '5', recent loans) ---");
+    foreach (var loan in complexLoans)
+    {
+        Console.WriteLine($"{loan.Member.Name} borrowed '{loan.Book.Title}' on {loan.LoanDate.ToShortDateString()}");
+    }
+}
+
+
+
 }

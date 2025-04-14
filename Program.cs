@@ -19,6 +19,9 @@ class Program
             facade.ShowBooksByCategory();
             facade.ShowUniqueCategories();
 
+            // ✅ Complex DB query (multiple filters, relationships, and parameters)
+            facade.ShowComplexFilteredLoans();
+
             // ✅ Test CRUD functionality
             Console.WriteLine("\n--- Testing UpdateBookTitle ---");
             facade.ChangeBookTitle(1, "Updated Book Title 1");

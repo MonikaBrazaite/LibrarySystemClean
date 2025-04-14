@@ -42,4 +42,10 @@ public class LibraryFacade
     {
         _service.DeleteLoan(loanId);
     }
+
+    public void ShowComplexFilteredLoans()
+{
+    _service.DisplayComplexFilteredLoans();
+}
+
 }
