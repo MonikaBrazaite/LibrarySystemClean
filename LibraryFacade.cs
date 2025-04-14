@@ -9,6 +9,8 @@ public class LibraryFacade
 
     public void InitializeSystem()
     {
+        _service.RegisterObserver(new EmailNotifier());
+        _service.RegisterObserver(new SMSNotifier()); // ✅ Add SMS notifications
         _service.SeedDatabase();
     }
 

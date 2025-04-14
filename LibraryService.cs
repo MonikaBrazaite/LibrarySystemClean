@@ -108,7 +108,7 @@ public class LibraryService
                     MemberId = members[i].MemberId,
                     LoanDate = DateTime.Now.AddDays(-i)
                 };
-                NotifyObservers(loan); // ✅ Observer pattern in action
+                NotifyObservers(loan); // Observer pattern
                 return loan;
             }).ToList();
 
@@ -120,7 +120,7 @@ public class LibraryService
     public void DisplayAllLoans()
     {
         ILoanDisplayer displayer = new BasicLoanDisplayer(_db);
-        displayer = new TimestampedLoanDisplayer(displayer); // Decorate it
+        displayer = new TimestampedLoanDisplayer(displayer); // Decorator
 
         displayer.Display();
     }
