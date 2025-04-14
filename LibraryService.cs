@@ -96,16 +96,14 @@ public class LibraryService
         }
     }
 
-    public void DisplayAllLoans()
-    {
-        Console.WriteLine("Loans:");
-        foreach (var loan in _db.Loans
-            .Include(l => l.Book)
-            .Include(l => l.Member))
-        {
-            Console.WriteLine($"{loan.Member.Name} borrowed '{loan.Book.Title}' on {loan.LoanDate.ToShortDateString()}");
-        }
-    }
+public void DisplayAllLoans()
+{
+    ILoanDisplayer displayer = new BasicLoanDisplayer(_db);
+    displayer = new TimestampedLoanDisplayer(displayer); // Decorate it
+
+    displayer.Display();
+}
+
 
     public void DisplayFilteredLoans()
     {
