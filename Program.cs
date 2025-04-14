@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 class Program
 {
@@ -12,83 +12,80 @@ class Program
             // Add sample categories
             if (!db.Categories.Any())
             {
-                var fiction = new Category { Name = "Fiction" };
-                var sciFi = new Category { Name = "Science Fiction" };
-                var fantasy = new Category { Name = "Fantasy" };
-
-                db.Categories.AddRange(fiction, sciFi, fantasy);
+                var categories = new List<Category>
+                {
+                    new Category { Name = "Fiction" },
+                    new Category { Name = "Science Fiction" },
+                    new Category { Name = "Fantasy" },
+                    new Category { Name = "Non-Fiction" },
+                    new Category { Name = "Mystery" },
+                    new Category { Name = "Biography" },
+                    new Category { Name = "Romance" },
+                    new Category { Name = "Thriller" },
+                    new Category { Name = "Children" },
+                    new Category { Name = "History" },
+                    new Category { Name = "Horror" },
+                    new Category { Name = "Poetry" },
+                    new Category { Name = "Science" },
+                    new Category { Name = "Self-help" },
+                    new Category { Name = "Adventure" },
+                    new Category { Name = "Drama" },
+                    new Category { Name = "Classic" },
+                    new Category { Name = "Travel" },
+                    new Category { Name = "Philosophy" },
+                    new Category { Name = "Health" }
+                };
+                db.Categories.AddRange(categories);
                 db.SaveChanges();
             }
 
             // Add sample members
             if (!db.Members.Any())
             {
-                var member1 = new Member
+                var members = Enumerable.Range(1, 20).Select(i => new Member
                 {
-                    Name = "Alice Johnson",
+                    Name = $"Member {i}",
                     Contact = new ContactInfo
                     {
-                        Email = "alice@example.com",
-                        PhoneNumber = "123-456-7890"
+                        Email = $"member{i}@example.com",
+                        PhoneNumber = $"123-456-78{i:D2}"
                     }
-                };
+                }).ToList();
 
-                var member2 = new Member
-                {
-                    Name = "Bob Smith",
-                    Contact = new ContactInfo
-                    {
-                        Email = "bob@example.com",
-                        PhoneNumber = "987-654-3210"
-                    }
-                };
-
-                db.Members.AddRange(member1, member2);
+                db.Members.AddRange(members);
                 db.SaveChanges();
             }
 
             // Add sample books
             if (!db.Books.Any())
             {
-                var fictionCategory = db.Categories.FirstOrDefault(c => c.Name == "Fiction");
-                var fantasyCategory = db.Categories.FirstOrDefault(c => c.Name == "Fantasy");
-
-                var book1 = new Book
+                var categories = db.Categories.Take(20).ToList();
+                var books = Enumerable.Range(1, 20).Select(i => new Book
                 {
-                    Title = "The Hobbit",
-                    Author = "J.R.R. Tolkien",
-                    ISBN = "978-0547928227",
-                    YearPublished = 1937,
-                    CategoryId = fantasyCategory.CategoryId
-                };
+                    Title = $"Book Title {i}",
+                    Author = $"Author {i}",
+                    ISBN = $"978-000000000{i:D2}",
+                    YearPublished = 2000 + i,
+                    CategoryId = categories[i % categories.Count].CategoryId
+                }).ToList();
 
-                var book2 = new Book
-                {
-                    Title = "1984",
-                    Author = "George Orwell",
-                    ISBN = "978-0451524935",
-                    YearPublished = 1949,
-                    CategoryId = fictionCategory.CategoryId
-                };
-
-                db.Books.AddRange(book1, book2);
+                db.Books.AddRange(books);
                 db.SaveChanges();
             }
 
-            // Add a sample loan
+            // Add sample loans
             if (!db.Loans.Any())
             {
-                var firstBook = db.Books.First();
-                var firstMember = db.Members.First();
-
-                var loan = new Loan
+                var books = db.Books.Take(20).ToList();
+                var members = db.Members.Take(20).ToList();
+                var loans = Enumerable.Range(0, 20).Select(i => new Loan
                 {
-                    BookId = firstBook.BookId,
-                    MemberId = firstMember.MemberId,
-                    LoanDate = DateTime.Now
-                };
+                    BookId = books[i % books.Count].BookId,
+                    MemberId = members[i % members.Count].MemberId,
+                    LoanDate = DateTime.Now.AddDays(-i)
+                }).ToList();
 
-                db.Loans.Add(loan);
+                db.Loans.AddRange(loans);
                 db.SaveChanges();
             }
 
@@ -101,30 +98,31 @@ class Program
                 Console.WriteLine($"{loan.Member.Name} borrowed '{loan.Book.Title}' on {loan.LoanDate.ToShortDateString()}");
             }
 
-            // Load all loans into a List
-            List<Loan> allLoans = db.Loans
+            // Filter: loans where book title contains "the"
+            var filteredLoans = db.Loans
                 .Include(l => l.Book)
                 .Include(l => l.Member)
-                .ToList();
-
-            // Filter: loans where book title contains "the"
-            var filteredLoans = allLoans
                 .Where(l => l.Book.Title.ToLower().Contains("the"))
                 .ToList();
 
-            // Display filtered results
             Console.WriteLine("\nFiltered Loans (book title contains 'the'):");
             foreach (var loan in filteredLoans)
             {
                 Console.WriteLine($"{loan.Member.Name} → {loan.Book.Title}");
             }
 
-            // Bonus: List all distinct categories
+            // Display all unique categories
+            var categoriesList = db.Categories
+                .Select(c => c.Name)
+                .Distinct()
+                .ToList();
+
             Console.WriteLine("\nUnique categories:");
-            foreach (var category in db.Categories)
+            foreach (var name in categoriesList)
             {
-                Console.WriteLine($"- {category.Name}");
+                Console.WriteLine($"- {name}");
             }
         }
     }
 }
+
